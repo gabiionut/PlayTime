@@ -64,8 +64,8 @@ class _MovieTimeScreenState extends State<MovieTimeScreen>
       case AppLifecycleState.inactive:
         print('Inactive');
         break;
-      case AppLifecycleState.suspending:
-        print('Suspending');
+      case AppLifecycleState.detached:
+        print('Detached');
         break;
     }
   }

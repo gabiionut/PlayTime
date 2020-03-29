@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Image.asset('PlayTimeLogo.png', fit: BoxFit.cover),
+            Image.asset('PlayTimeLogo.png', fit: BoxFit.cover, height: 70,),
             Text(
               'PlayTime',
               style: TextStyle(fontFamily: 'Righteous'),
