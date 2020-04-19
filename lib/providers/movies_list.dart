@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:are_we_there_yet/providers/movie_cast_model.dart';
+import 'package:are_we_there_yet/providers/movie_credits_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:are_we_there_yet/models/genre.dart';
@@ -11,8 +14,9 @@ class MoviesList with ChangeNotifier {
   List<MovieOverviewModel> _moviesList = [];
   MovieDetailsModel _currentMovie = MovieDetailsModel();
   List<MovieOverviewModel> _searchedMovies = [];
+  MovieCreditsModel _movieCredits = MovieCreditsModel();
 
-  final String apiKey = '1c4b19026060e9bc66fb5aabf4866e95';
+  final String apiKey = DotEnv().env['API_KEY'];
 
   Future<void> fetchMovies(String category, [String country, String language]) {
     final url =
@@ -54,7 +58,8 @@ class MoviesList with ChangeNotifier {
         runtime: response['runtime'],
         revenue: response['revenue'],
         genres: (response['genres'] as List<dynamic>)
-            .map((genre) => Genre(genre['id'], genre['name'])).toList(),
+            .map((genre) => Genre(genre['id'], genre['name']))
+            .toList(),
       );
     });
   }
@@ -79,6 +84,24 @@ class MoviesList with ChangeNotifier {
         ));
       });
       notifyListeners();
+    });
+  }
+
+  Future<void> getMovieCredits(int id) {
+    final url =
+        'https://api.themoviedb.org/3/movie/$id/credits?api_key=$apiKey';
+
+    return http.get(url).then((res) {
+      var response = json.decode(res.body) as Map<String, dynamic>;
+      _movieCredits = MovieCreditsModel(
+          id: response['id'],
+          cast: (response['cast'] as List<dynamic>).map((c) => MovieCastModel(
+                id: c['id'],
+                castId: c['cast_id'],
+                character: c['character'],
+                name: c['name'],
+                profilePath: c['profile_path'],
+              )).toList());
     });
   }
 
@@ -111,5 +134,9 @@ class MoviesList with ChangeNotifier {
       revenue: _currentMovie.revenue,
       genres: _currentMovie.genres,
     );
+  }
+
+  MovieCreditsModel get movieCredits {
+    return MovieCreditsModel(id: _movieCredits.id, cast: _movieCredits.cast);
   }
 }

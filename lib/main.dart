@@ -3,9 +3,13 @@ import 'package:are_we_there_yet/providers/movies_list.dart';
 import 'package:are_we_there_yet/screens/home_page_screen.dart';
 import 'package:are_we_there_yet/screens/movie_details_screen.dart';
 import 'package:are_we_there_yet/screens/search_movie_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
-void main() => runApp(MyApp());
+Future main() async {
+  await DotEnv().load('release.env');
+  runApp(MyApp());
+}
 
 Map<int, Color> color = {
   50: Color.fromRGBO(136, 14, 79, .1),

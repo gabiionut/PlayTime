@@ -1,3 +1,4 @@
+import 'package:are_we_there_yet/providers/movie_credits_model.dart';
 import 'package:flutter/material.dart';
 import 'package:are_we_there_yet/providers/movie_details_model.dart';
 import 'package:are_we_there_yet/providers/movies_list.dart';
@@ -15,11 +16,12 @@ class MovieDetailsScreen extends StatefulWidget {
 
 class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   bool hasMovie = false;
+  bool hasCredits = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (hasMovie) {
+    if (hasMovie && hasCredits) {
       return;
     }
     final int movieId = ModalRoute.of(context).settings.arguments as int;
@@ -31,19 +33,30 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         hasMovie = true;
       });
     });
+
+    Provider.of<MoviesList>(context, listen: false)
+        .getMovieCredits(movieId)
+        .then((_) {
+      setState(() {
+        hasCredits = true;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final MovieDetailsModel movie = Provider.of<MoviesList>(context).movie;
+    final MovieCreditsModel movieCredits = Provider.of<MoviesList>(context).movieCredits;
+
     return Scaffold(
       backgroundColor: Color.fromRGBO(8, 28, 36, 1),
       appBar: AppBar(
         elevation: 0,
-        title: hasMovie ? Text(movie.title != null ?  movie.title : '') : Text(''),
+        title:
+            hasMovie ? Text(movie.title != null ? movie.title : '') : Text(''),
       ),
-      body: hasMovie
-          ? MovieDetails(movie)
+      body: hasMovie && hasCredits
+          ? MovieDetails(movie, movieCredits)
           : Center(
               child: CircularProgressIndicator(),
             ),

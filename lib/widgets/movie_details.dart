@@ -1,3 +1,4 @@
+import 'package:are_we_there_yet/providers/movie_credits_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:are_we_there_yet/helpers/time_helper.dart';
@@ -5,7 +6,9 @@ import 'package:are_we_there_yet/providers/movie_details_model.dart';
 
 class MovieDetails extends StatelessWidget {
   final MovieDetailsModel movie;
-  MovieDetails(this.movie);
+  final MovieCreditsModel movieCredits;
+
+  MovieDetails(this.movie, this.movieCredits);
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +70,8 @@ class MovieDetails extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
                           Text(movie.releaseDate.year.toString()),
-                          Text(TimeHelper.timeFormatter(movie.runtime != null ?  movie.runtime * 60 : 0)),
+                          Text(TimeHelper.timeFormatter(
+                              movie.runtime != null ? movie.runtime * 60 : 0)),
                         ],
                       ),
                     ],
@@ -99,6 +103,57 @@ class MovieDetails extends StatelessWidget {
               ),
             ),
             Text(movie.overview),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Cast',
+                  style: TextStyle(
+                    color: Theme.of(context).accentColor,
+                    fontSize: 18.0,
+                  ),
+                ),
+              ),
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                    child: Divider(
+                  color: Theme.of(context).accentColor,
+                )),
+              ],
+            ),
+            ListView(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: movieCredits.cast
+                    .where((cast) => cast.profilePath != null)
+                    .map((cast) => ListTile(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 0.0),
+                          leading: Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                      "http://image.tmdb.org/t/p/w92//${cast.profilePath}"),
+                                  fit: BoxFit.cover,
+                                )),
+                          ),
+                          title: Text(cast.name),
+                          subtitle: Text(cast.character),
+                        ))
+                    .toList()),
+            Row(
+              children: <Widget>[
+                Expanded(
+                    child: Divider(
+                  color: Theme.of(context).accentColor,
+                )),
+              ],
+            ),
           ],
         ),
       ),
